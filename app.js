@@ -2,15 +2,17 @@ class ImageGallery extends HTMLUListElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        let images = ImageGallery.fetchImages();
-        images.forEach(image => {
-            let li = document.createElement('li');
-            let img = document.createElement('img');
-            img.src = image.url;
-            li.appendChild(img);
-            this.shadowRoot.append(li);
-        }, this);
-        this.shadowRoot.append(`<button>Generate</button>`);
+        let sr = this;
+        ImageGallery.fetchImages().then(images => {
+            images.forEach(image => {
+                let li = document.createElement('li');
+                let img = document.createElement('img');
+                img.setAttribute('width', '400');
+                img.src = image.download_url;
+                li.appendChild(img);
+                sr.shadowRoot.append(li);
+            }, this);
+        });
     }
 
     static async fetchImages() {
@@ -21,5 +23,11 @@ class ImageGallery extends HTMLUListElement {
     
 }
 
+class GalleryButton extends HTMLButtonElement {
+    constructor() {
+        super();
+    }
+}
 
-customElements.define('image-gallery', ImageGallery, {extends: 'ul'});
+customElements.define('image-gallery', ImageGallery, { extends: 'ul' });
+customElements.define('button-generate', GalleryButton, { extends: 'button' });  
