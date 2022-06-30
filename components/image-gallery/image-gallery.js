@@ -1,3 +1,4 @@
+
 class ImageGallery extends HTMLDivElement {
     static imagesPerPage = 6;
     static imageHeight = 240;
@@ -29,6 +30,9 @@ class ImageGallery extends HTMLDivElement {
                 ul.appendChild(li);
             }, this);
         });
+
+        let button = `<button-generate>Generate</button-generate>`;
+        shadow.appendChild(button);
     }
 
     static async fetchImages() {
