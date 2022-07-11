@@ -13,8 +13,20 @@ class ImageGallery extends HTMLDivElement {
         styleLink.rel = 'stylesheet';
         styleLink.href = './components/image-gallery/image-gallery.css';
         shadow.appendChild(styleLink);
+        let igdiv = document.createElement('div');
+        igdiv.id = 'image-gallery';
+        shadow.appendChild(igdiv);
 
-        let ul = shadow.appendChild(document.createElement('ul'));
+        let button = document.createElement('button')
+        button.addEventListener('click', (e) => {this.renderGallery()});
+        button.appendChild(document.createTextNode('Generate'));
+        shadow.appendChild(button);
+    }
+
+    renderGallery() {
+        console.log('rendering gallery');
+        var shadow = this.shadowRoot;
+        let ul = document.createElement('ul');
         ImageGallery.fetchImages().then(images => {
             images.forEach(image => {
                 let li = document.createElement('li');
@@ -29,15 +41,17 @@ class ImageGallery extends HTMLDivElement {
                 li.appendChild(img);
                 ul.appendChild(li);
             }, this);
+            shadow.getElementById('image-gallery').replaceChildren(ul);
         });
-
-        let button = `<button-generate>Generate</button-generate>`;
-        shadow.appendChild(button);
+    }
+    connectedCallback() {
+        this.renderGallery();
     }
 
     static async fetchImages() {
         let page = Math.floor(Math.random() * 100); // random page number
-        const response = await fetch('https://picsum.photos/v2/list?page=' + page + '&limit=' + ImageGallery.imagesPerPage);
+        console.log('fetching images from page ' + page);
+        const response = await fetch(`https://picsum.photos/v2/list?page=${page}&limit=${ImageGallery.imagesPerPage}`);
         const images = await response.json();
         return images;
     }
