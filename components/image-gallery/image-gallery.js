@@ -25,6 +25,7 @@ class ImageGallery extends HTMLDivElement {
 
     renderGallery() {
         console.log('rendering gallery');
+        // get this elements instance of the shadow DOM
         var shadow = this.shadowRoot;
         let ul = document.createElement('ul');
         ImageGallery.fetchImages().then(images => {
@@ -32,23 +33,21 @@ class ImageGallery extends HTMLDivElement {
                 let li = document.createElement('li');
                 let img = document.createElement('img');
                 // formulate the url
-                img.src = "https://picsum.photos/id/" + 
-                    image.id + 
-                    "/" + 
-                    ImageGallery.imageWidth +
-                    "/" + 
-                    ImageGallery.imageHeight;
+                img.src = `https://picsum.photos/id/${image.id}/${ImageGallery.imageWidth}/${ImageGallery.imageHeight}`;
                 li.appendChild(img);
                 ul.appendChild(li);
             }, this);
+            // we append the finished list in this async call, not after so it's smoother. Doing it after means the gallery is blank for a while
             shadow.getElementById('image-gallery').replaceChildren(ul);
         });
     }
     connectedCallback() {
+        // call the renderGallery function when the element is added to the DOM
         this.renderGallery();
     }
 
     static async fetchImages() {
+        // fetch the images from the API
         let page = Math.floor(Math.random() * 100); // random page number
         console.log('fetching images from page ' + page);
         const response = await fetch(`https://picsum.photos/v2/list?page=${page}&limit=${ImageGallery.imagesPerPage}`);
