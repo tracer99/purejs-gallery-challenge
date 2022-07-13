@@ -1,10 +1,15 @@
 
+import Binding from '../../binding.js';
+
 class ImageGallery extends HTMLDivElement {
     static imagesPerPage = 6;
     static imageHeight = 240;
     static imageWidth = 320;
+
+    
     constructor() {
         super();
+        this.images = []; // store the images in the images array
         // start shadow DOM
         let shadow = this.attachShadow({ mode: 'open' }); // create shadow DOM and attach to local variable
         
@@ -16,8 +21,11 @@ class ImageGallery extends HTMLDivElement {
         let igdiv = document.createElement('div');
         igdiv.id = 'image-gallery';
         shadow.appendChild(igdiv);
-
+        // horizontal rule
+        shadow.appendChild(document.createElement('hr'));
+        // make the button
         let button = document.createElement('button')
+        // bind it to the renderGallery function
         button.addEventListener('click', (e) => {this.renderGallery()});
         button.appendChild(document.createTextNode('Generate'));
         shadow.appendChild(button);
@@ -28,21 +36,27 @@ class ImageGallery extends HTMLDivElement {
         // get this elements instance of the shadow DOM
         var shadow = this.shadowRoot;
         let ul = document.createElement('ul');
+        this.images.forEach(image => {
+            let li = document.createElement('li');
+            let img = document.createElement('img');
+            // formulate the url
+            img.src = `https://picsum.photos/id/${image.id}/${ImageGallery.imageWidth}/${ImageGallery.imageHeight}`;
+            li.appendChild(img);
+            ul.appendChild(li);
+        }, this);
+        shadow.getElementById('image-gallery').replaceChildren(ul);
+    }
+    updateGallery() {
+        // update the gallery
+        console.log('updating gallery');
+        let galleryImages = this.images;
         ImageGallery.fetchImages().then(images => {
-            images.forEach(image => {
-                let li = document.createElement('li');
-                let img = document.createElement('img');
-                // formulate the url
-                img.src = `https://picsum.photos/id/${image.id}/${ImageGallery.imageWidth}/${ImageGallery.imageHeight}`;
-                li.appendChild(img);
-                ul.appendChild(li);
-            }, this);
-            // we append the finished list in this async call, not after so it's smoother. Doing it after means the gallery is blank for a while
-            shadow.getElementById('image-gallery').replaceChildren(ul);
+            this.images = images;
         });
     }
     connectedCallback() {
         // call the renderGallery function when the element is added to the DOM
+        this.updateGallery();
         this.renderGallery();
     }
 

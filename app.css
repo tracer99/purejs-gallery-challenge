@@ -1,4 +1,9 @@
+body, p, b, button, a, li {
+  font: normal 18px Helvetica, Arial, sans-serif;
+}
+
 image-gallery {
   width: 800px;
   height: 100%;
+  text-align: center;
 }
